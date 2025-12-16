@@ -7,7 +7,6 @@ import com.recrutement.entity.Candidate;
 import com.recrutement.entity.Enterprise;
 import com.recrutement.entity.Role;
 import com.recrutement.entity.User;
-// import org.mindrot.jbcrypt.BCrypt; // Décommentez si vous utilisez BCrypt plus tard
 
 public class UserService {
 
@@ -20,33 +19,30 @@ public class UserService {
         if (user.getEmail() == null || user.getEmail().isEmpty()) {
             throw new IllegalArgumentException("L'email ne peut pas être vide.");
         }
-        if (user.getPassword().length() < 3) { // J'ai réduit à 3 pour faciliter vos tests
+        if (user.getPassword().length() < 3) {
             throw new IllegalArgumentException("Le mot de passe est trop court.");
         }
 
-        // 2. Sauvegarde de l'Utilisateur (Login)
-        // (Si vous utilisez BCrypt, le hachage se ferait ici)
+        // 2. Sauvegarde de l'Utilisateur
+        // UserDAO.save() utilise persist(), donc 'user' sera mis à jour avec son ID généré.
         userDAO.save(user); 
 
         // 3. CRÉATION AUTOMATIQUE DU PROFIL
-        // Une fois l'user sauvegardé, il a un ID. On peut créer son profil lié.
-        
         if (user.getRole() == Role.ENTERPRISE) {
-            // Créer un profil Entreprise vide par défaut
             Enterprise enterprise = new Enterprise();
-            enterprise.setCompanyName("Nouvelle Entreprise"); // Nom par défaut
-            enterprise.setDescription("Description à compléter");
-            enterprise.setAddress("Non renseignée");
-            enterprise.setUser(user); // LIEN IMPORTANT
+            enterprise.setCompanyName("Mon Entreprise (à configurer)");
+            enterprise.setDescription("Description par défaut");
+            enterprise.setAddress("Adresse à compléter");
+            enterprise.setUser(user); // Important : user a maintenant un ID grâce à l'étape 2
             
             enterpriseDAO.save(enterprise);
             
         } else if (user.getRole() == Role.CANDIDATE) {
-            // Créer un profil Candidat vide par défaut
             Candidate candidate = new Candidate();
             candidate.setFirstName("Nouveau");
             candidate.setLastName("Candidat");
-            candidate.setUser(user); // LIEN IMPORTANT
+            candidate.setTitle("En recherche active");
+            candidate.setUser(user); // Important : user a maintenant un ID
             
             candidateDAO.save(candidate);
         }
@@ -54,7 +50,6 @@ public class UserService {
 
     public User login(String email, String password) {
         User user = userDAO.findByEmail(email);
-        // Comparaison simple pour l'instant (remplacez par BCrypt.checkpw si besoin)
         if (user != null && user.getPassword().equals(password)) {
             return user;
         }
