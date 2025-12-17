@@ -25,6 +25,18 @@ public class Candidate {
     @JoinColumn(name = "user_id", referencedColumnName = "id", nullable = false)
     private User user;
 
+    // Compétences du candidat (séparées par des virgules pour le matching)
+    @Column(columnDefinition = "TEXT")
+    private String skills;
+
+    // Diplômes et formations
+    @Column(columnDefinition = "TEXT")
+    private String degrees;
+
+    // Chemin vers le CV uploadé (PDF)
+    @Column(name = "cv_file_path")
+    private String cvFilePath;
+
     // Constructors
     public Candidate() {
     }
@@ -38,21 +50,75 @@ public class Candidate {
     }
 
     // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public Long getId() {
+        return id;
+    }
 
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
+    public String getFirstName() {
+        return firstName;
+    }
 
-    public String getPhone() { return phone; }
-    public void setPhone(String phone) { this.phone = phone; }
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    }
 
-    public String getTitle() { return title; }
-    public void setTitle(String title) { this.title = title; }
+    public String getLastName() {
+        return lastName;
+    }
 
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public String getSkills() {
+        return skills;
+    }
+
+    public void setSkills(String skills) {
+        this.skills = skills;
+    }
+
+    public String getDegrees() {
+        return degrees;
+    }
+
+    public void setDegrees(String degrees) {
+        this.degrees = degrees;
+    }
+
+    public String getCvFilePath() {
+        return cvFilePath;
+    }
+
+    public void setCvFilePath(String cvFilePath) {
+        this.cvFilePath = cvFilePath;
+    }
 }

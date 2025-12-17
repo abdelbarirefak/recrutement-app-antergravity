@@ -1,8 +1,8 @@
 package com.recrutement.controller;
 
+import com.recrutement.dao.RegistrationRequestDAO;
+import com.recrutement.entity.RegistrationRequest;
 import com.recrutement.entity.Role;
-import com.recrutement.entity.User;
-import com.recrutement.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -10,50 +10,55 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-// This annotation tells the server: "If someone goes to /register, run this code."
+/**
+ * Servlet d'inscription - Crée une RegistrationRequest (inscription différée).
+ * L'utilisateur final est créé uniquement après validation par l'admin.
+ */
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
 
-    private UserService userService = new UserService();
+    private RegistrationRequestDAO requestDAO = new RegistrationRequestDAO();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        // 1. Retrieve data from the HTML form
+        // 1. Récupérer les données du formulaire
         String email = request.getParameter("email");
         String password = request.getParameter("password");
-        String roleParam = request.getParameter("role"); // e.g., "CANDIDATE" or "ENTERPRISE"
+        String roleParam = request.getParameter("role");
 
-        // 2. Convert the role string to our Enum
+        // Champs supplémentaires pour le profil
+        String firstName = request.getParameter("firstName");
+        String lastName = request.getParameter("lastName");
+        String companyName = request.getParameter("companyName");
+
+        // 2. Convertir le rôle
         Role role = Role.valueOf(roleParam);
 
-        // 3. Create the User object
-        User newUser = new User(email, password, role);
+        // 3. Créer la demande d'inscription (pas l'utilisateur final)
+        RegistrationRequest regRequest = new RegistrationRequest(email, password, role);
+        regRequest.setFirstName(firstName);
+        regRequest.setLastName(lastName);
+        regRequest.setCompanyName(companyName);
 
         try {
-            // 4. Call the Service to save the user AND create their profile
-            userService.registerUser(newUser);
+            // 4. Sauvegarder la demande
+            requestDAO.save(regRequest);
 
-            // 5. Success! Redirect to login page with success message
-            response.sendRedirect("login.jsp?registered=success");
+            // 5. Succès - Redirection avec message d'attente
+            response.sendRedirect("login.jsp?registered=pending");
 
-        } catch (IllegalArgumentException e) {
-            // 6. Validation error (e.g. weak password)
-            request.setAttribute("errorMessage", e.getMessage());
-            request.getRequestDispatcher("register.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
-            request.setAttribute("errorMessage", "Erreur système. Veuillez réessayer.");
+            request.setAttribute("errorMessage", "Erreur lors de l'inscription. Veuillez réessayer.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
         }
     }
 
-    // This handles GET requests (when someone just visits /register url directly)
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Forward the user to the registration form (we will create this next)
         request.getRequestDispatcher("register.jsp").forward(request, response);
     }
 }

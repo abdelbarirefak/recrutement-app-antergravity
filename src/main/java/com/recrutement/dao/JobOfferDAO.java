@@ -1,34 +1,76 @@
 package com.recrutement.dao;
 
 import com.recrutement.entity.JobOffer;
+import com.recrutement.util.JPAUtil;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import java.util.List;
 
 public class JobOfferDAO {
 
-    private static final EntityManagerFactory emf = Persistence.createEntityManagerFactory("recrutementPU");
-
     public void save(JobOffer offer) {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
             em.persist(offer);
             em.getTransaction().commit();
-        } finally { em.close(); }
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public JobOffer findById(Long id) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em.find(JobOffer.class, id);
+        } finally {
+            em.close();
+        }
     }
 
     public List<JobOffer> findAll() {
-        EntityManager em = emf.createEntityManager();
+        EntityManager em = JPAUtil.getEntityManager();
         try {
-            return em.createQuery("SELECT j FROM JobOffer j", JobOffer.class).getResultList();
-        } finally { em.close(); }
+            return em.createQuery("SELECT j FROM JobOffer j ORDER BY j.postedDate DESC", JobOffer.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
     }
-    
-    // NOUVELLE MÉTHODE : SUPPRIMER UNE OFFRE
-    public void delete(long id) {
-        EntityManager em = emf.createEntityManager(); // Assurez-vous d'avoir 'emf' défini en haut de la classe
+
+    public List<JobOffer> findByEnterpriseId(Long enterpriseId) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            return em
+                    .createQuery("SELECT j FROM JobOffer j WHERE j.enterprise.id = :entId ORDER BY j.postedDate DESC",
+                            JobOffer.class)
+                    .setParameter("entId", enterpriseId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void update(JobOffer offer) {
+        EntityManager em = JPAUtil.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.merge(offer);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
+            e.printStackTrace();
+        } finally {
+            em.close();
+        }
+    }
+
+    public void delete(Long id) {
+        EntityManager em = JPAUtil.getEntityManager();
         try {
             em.getTransaction().begin();
             JobOffer offer = em.find(JobOffer.class, id);
@@ -37,7 +79,8 @@ public class JobOfferDAO {
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            if (em.getTransaction().isActive())
+                em.getTransaction().rollback();
             e.printStackTrace();
         } finally {
             em.close();

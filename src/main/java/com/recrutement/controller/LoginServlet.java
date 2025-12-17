@@ -1,5 +1,6 @@
 package com.recrutement.controller;
 
+import com.recrutement.entity.Role;
 import com.recrutement.entity.User;
 import com.recrutement.service.UserService;
 import jakarta.servlet.ServletException;
@@ -16,37 +17,41 @@ public class LoginServlet extends HttpServlet {
     private UserService userService = new UserService();
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Just show the login page
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         request.getRequestDispatcher("login.jsp").forward(request, response);
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+
         String email = request.getParameter("email");
         String password = request.getParameter("password");
 
         try {
-            // 1. Check credentials using the Service
             User user = userService.login(email, password);
 
             if (user != null) {
-                // 2. SUCCESS: Create a Session
+                // Créer la session
                 HttpSession session = request.getSession();
-                session.setAttribute("loggedUser", user); // Save user in session
+                session.setAttribute("loggedUser", user);
 
-                // 3. Redirect to the Dashboard
-                response.sendRedirect("dashboard.jsp");
+                // Rediriger selon le rôle
+                if (user.getRole() == Role.ADMIN) {
+                    response.sendRedirect("admin");
+                } else {
+                    response.sendRedirect("dashboard.jsp");
+                }
             } else {
-                // 4. FAILURE: Reload login page with an error message
                 request.setAttribute("errorMessage", "Email ou mot de passe incorrect.");
                 request.getRequestDispatcher("login.jsp").forward(request, response);
             }
 
         } catch (Exception e) {
             e.printStackTrace();
-            response.getWriter().write("Server Error");
+            request.setAttribute("errorMessage", "Erreur serveur.");
+            request.getRequestDispatcher("login.jsp").forward(request, response);
         }
     }
 }
