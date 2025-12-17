@@ -19,12 +19,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-    
-    // NOUVEAU CHAMP POUR LA VALIDATION
-    @Column(name = "is_validated", nullable = false)
-    private boolean isValidated = false; // Par défaut non validé
 
-    public User() {}
+    // --- CE CHAMP MANQUAIT ---
+    @Column(name = "is_validated", nullable = false)
+    private boolean isValidated = false;
+
+    public User() {
+    }
 
     public User(String email, String password, Role role) {
         this.email = email;
@@ -33,16 +34,44 @@ public class User {
     }
 
     // Getters et Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-    
-    // Getters pour la validation
-    public boolean isValidated() { return isValidated; }
-    public void setValidated(boolean validated) { isValidated = validated; }
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    // --- CES MÉTHODES MANQUAIENT ---
+    public boolean isValidated() {
+        return isValidated;
+    }
+
+    public void setValidated(boolean validated) {
+        isValidated = validated;
+    }
 }
