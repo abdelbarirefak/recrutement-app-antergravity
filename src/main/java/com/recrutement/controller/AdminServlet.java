@@ -1,9 +1,6 @@
 package com.recrutement.controller;
 
-import com.recrutement.dao.ApplicationDAO;
-import com.recrutement.dao.JobOfferDAO;
-import com.recrutement.dao.RegistrationRequestDAO;
-import com.recrutement.dao.UserDAO;
+import com.recrutement.dao.*;
 import com.recrutement.entity.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -14,59 +11,35 @@ import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * Servlet principal d'administration - Dashboard
+ */
 @WebServlet("/admin")
 public class AdminServlet extends HttpServlet {
 
     private UserDAO userDAO = new UserDAO();
-    private JobOfferDAO jobOfferDAO = new JobOfferDAO();
-    private ApplicationDAO applicationDAO = new ApplicationDAO();
-    private RegistrationRequestDAO requestDAO = new RegistrationRequestDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("loggedUser");
 
-        if (user == null || user.getRole() != Role.ADMIN) {
+        HttpSession session = request.getSession();
+        User admin = (User) session.getAttribute("loggedUser");
+
+        if (admin == null || admin.getRole() != Role.ADMIN) {
             response.sendRedirect("login.jsp");
             return;
         }
 
-        // Charger les données pour le nouveau dashboard
-        List<RegistrationRequest> pendingRequests = requestDAO.findAllPending();
-        List<Application> pendingApplications = applicationDAO.findPendingValidation();
+        // Stats pour le dashboard
+        List<User> pendingUsers = userDAO.findByStatus(UserStatus.EN_ATTENTE);
+        List<User> enterprises = userDAO.findByRole(Role.ENTERPRISE);
+        List<User> candidates = userDAO.findByRole(Role.CANDIDATE);
 
-        request.setAttribute("pendingRequests", pendingRequests);
-        request.setAttribute("pendingApplications", pendingApplications);
+        request.setAttribute("pendingCount", pendingUsers.size());
+        request.setAttribute("enterpriseCount", enterprises.size());
+        request.setAttribute("candidateCount", candidates.size());
 
         request.getRequestDispatcher("admin-dashboard.jsp").forward(request, response);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String action = request.getParameter("action");
-
-        try {
-            if ("validate_user".equals(action)) {
-                long userId = Long.parseLong(request.getParameter("id"));
-                User u = userDAO.findById(userId);
-                if (u != null) {
-                    u.setValidated(true);
-                    userDAO.update(u);
-                }
-            } else if ("delete_user".equals(action)) {
-                long userId = Long.parseLong(request.getParameter("id"));
-                userDAO.delete(userId);
-            } else if ("delete_offer".equals(action)) {
-                long offerId = Long.parseLong(request.getParameter("id"));
-                jobOfferDAO.delete(offerId);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        response.sendRedirect("admin");
     }
 }

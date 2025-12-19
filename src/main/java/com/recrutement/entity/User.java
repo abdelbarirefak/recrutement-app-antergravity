@@ -20,9 +20,9 @@ public class User {
     @Column(nullable = false)
     private Role role;
 
-    // --- CE CHAMP MANQUAIT ---
-    @Column(name = "is_validated", nullable = false)
-    private boolean isValidated = false;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private UserStatus status = UserStatus.EN_ATTENTE;
 
     public User() {
     }
@@ -31,6 +31,7 @@ public class User {
         this.email = email;
         this.password = password;
         this.role = role;
+        this.status = UserStatus.EN_ATTENTE;
     }
 
     // Getters et Setters
@@ -66,12 +67,20 @@ public class User {
         this.role = role;
     }
 
-    // --- CES MÉTHODES MANQUAIENT ---
+    public UserStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(UserStatus status) {
+        this.status = status;
+    }
+
+    // Méthode utilitaire pour vérifier si le compte est validé
     public boolean isValidated() {
-        return isValidated;
+        return this.status == UserStatus.VALIDE;
     }
 
     public void setValidated(boolean validated) {
-        isValidated = validated;
+        this.status = validated ? UserStatus.VALIDE : UserStatus.EN_ATTENTE;
     }
 }
