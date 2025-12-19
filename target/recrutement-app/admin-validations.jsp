@@ -95,28 +95,17 @@
                                                         </span>
                                                     </td>
                                                     <td class="p-4 text-right">
-                                                        <div class="flex justify-end gap-2">
-                                                            <form action="admin/validations" method="POST"
-                                                                style="display:inline">
-                                                                <input type="hidden" name="action" value="accept">
-                                                                <input type="hidden" name="userId"
-                                                                    value="<%= u.getId() %>">
-                                                                <button
-                                                                    class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center gap-1 text-sm font-medium">
-                                                                    <i data-lucide="check" class="w-4 h-4"></i> Accepter
-                                                                </button>
-                                                            </form>
-                                                            <form action="admin/validations" method="POST"
-                                                                style="display:inline"
-                                                                onsubmit="return confirm('Refuser et supprimer ce compte ?');">
-                                                                <input type="hidden" name="action" value="refuse">
-                                                                <input type="hidden" name="userId"
-                                                                    value="<%= u.getId() %>">
-                                                                <button
-                                                                    class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center gap-1 text-sm font-medium">
-                                                                    <i data-lucide="x" class="w-4 h-4"></i> Refuser
-                                                                </button>
-                                                            </form>
+                                                        <div class="flex justify-end gap-2 text-right">
+                                                            <button
+                                                                onclick="handleAction(event, 'accept', <%= u.getId() %>)"
+                                                                class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center gap-1 text-sm font-medium">
+                                                                <i data-lucide="check" class="w-4 h-4"></i> Accepter
+                                                            </button>
+                                                            <button
+                                                                onclick="handleAction(event, 'refuse', <%= u.getId() %>)"
+                                                                class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center gap-1 text-sm font-medium">
+                                                                <i data-lucide="x" class="w-4 h-4"></i> Refuser
+                                                            </button>
                                                         </div>
                                                     </td>
                                                 </tr>
@@ -128,7 +117,51 @@
 
             </div>
 
-            <script>lucide.createIcons();</script>
+            <script>
+                lucide.createIcons();
+
+                function handleAction(event, action, userId) {
+                    event.preventDefault();
+
+                    const row = event.target.closest('tr');
+                    const formData = new URLSearchParams();
+                    formData.append('action', action);
+                    formData.append('userId', userId);
+                    formData.append('ajax', 'true');
+
+                    if (action === 'refuse' && !confirm('Refuser et supprimer ce compte ?')) {
+                        return;
+                    }
+
+                    fetch('validations', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: formData.toString()
+                    })
+                        .then(response => {
+                            if (response.ok) {
+                                row.style.transition = 'all 0.5s ease';
+                                row.style.opacity = '0';
+                                row.style.transform = 'translateX(20px)';
+                                setTimeout(() => {
+                                    row.remove();
+                                    // Optionnel : vérifier s'il reste des lignes, sinon recharger pour afficher le message "vide"
+                                    if (document.querySelectorAll('tbody tr').length === 0) {
+                                        location.reload();
+                                    }
+                                }, 500);
+                            } else {
+                                alert('Erreur lors de l\'action. Veuillez réessayer.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Une erreur est survenue.');
+                        });
+                }
+            </script>
         </body>
 
         </html>

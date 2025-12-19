@@ -7,6 +7,7 @@ import com.recrutement.entity.Candidate;
 import com.recrutement.entity.Enterprise;
 import com.recrutement.entity.Role;
 import com.recrutement.entity.User;
+import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
 
@@ -24,8 +25,9 @@ public class UserService {
         }
 
         // 2. Sauvegarde de l'Utilisateur
-        // UserDAO.save() utilise persist(), donc 'user' sera mis à jour avec son ID généré.
-        userDAO.save(user); 
+        // UserDAO.save() utilise persist(), donc 'user' sera mis à jour avec son ID
+        // généré.
+        userDAO.save(user);
 
         // 3. CRÉATION AUTOMATIQUE DU PROFIL
         if (user.getRole() == Role.ENTERPRISE) {
@@ -34,23 +36,23 @@ public class UserService {
             enterprise.setDescription("Description par défaut");
             enterprise.setAddress("Adresse à compléter");
             enterprise.setUser(user); // Important : user a maintenant un ID grâce à l'étape 2
-            
+
             enterpriseDAO.save(enterprise);
-            
+
         } else if (user.getRole() == Role.CANDIDATE) {
             Candidate candidate = new Candidate();
             candidate.setFirstName("Nouveau");
             candidate.setLastName("Candidat");
             candidate.setTitle("En recherche active");
             candidate.setUser(user); // Important : user a maintenant un ID
-            
+
             candidateDAO.save(candidate);
         }
     }
 
     public User login(String email, String password) {
         User user = userDAO.findByEmail(email);
-        if (user != null && user.getPassword().equals(password)) {
+        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
             return user;
         }
         return null;

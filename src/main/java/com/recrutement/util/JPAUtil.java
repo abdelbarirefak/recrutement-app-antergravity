@@ -18,7 +18,8 @@ public class JPAUtil {
         try {
             emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
         } catch (Exception e) {
-            System.err.println("Erreur lors de la création de l'EntityManagerFactory : " + e.getMessage());
+            System.err.println("ERREUR CRITIQUE JPA : Impossible d'initialiser l'EntityManagerFactory");
+            e.printStackTrace(); // Affichera la cause réelle (ex: Connection refused)
             throw new ExceptionInInitializerError(e);
         }
     }

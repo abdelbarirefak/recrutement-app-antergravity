@@ -57,6 +57,11 @@ public class AdminValidationServlet extends HttpServlet {
             userDAO.delete(userId);
         }
 
-        response.sendRedirect(request.getContextPath() + "/admin/validations");
+        String isAjax = request.getParameter("ajax");
+        if ("true".equals(isAjax)) {
+            response.setStatus(HttpServletResponse.SC_OK);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/admin/validations");
+        }
     }
 }
