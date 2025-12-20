@@ -22,7 +22,7 @@
             <!-- Header -->
             <div class="bg-white shadow-sm border-b border-slate-200">
                 <div class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-                    <a href="admin"
+                    <a href="admin-dashboard.jsp"
                         class="text-slate-400 hover:text-slate-600 transition p-2 hover:bg-slate-100 rounded-lg">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>

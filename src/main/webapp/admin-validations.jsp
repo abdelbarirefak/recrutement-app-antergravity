@@ -22,7 +22,7 @@
             <!-- Header -->
             <div class="bg-white shadow-sm border-b border-slate-200">
                 <div class="max-w-7xl mx-auto px-6 py-4 flex items-center gap-4">
-                    <a href="admin"
+                    <a href="admin-dashboard.jsp"
                         class="text-slate-400 hover:text-slate-600 transition p-2 hover:bg-slate-100 rounded-lg">
                         <i data-lucide="arrow-left" class="w-5 h-5"></i>
                     </a>
@@ -67,50 +67,37 @@
                                             </tr>
                                         </thead>
                                         <tbody class="divide-y divide-slate-100">
-                                            <% for (User u : pendingUsers) { %>
-                                                <tr class="hover:bg-slate-50">
-                                                    <td class="p-4">
-                                                        <div class="flex items-center gap-3">
-                                                            <div class="<%= u.getRole().toString().equals(" CANDIDATE")
-                                                                ? "bg-blue-100 text-blue-600"
-                                                                : "bg-indigo-100 text-indigo-600" %> p-2 rounded-lg">
-                                                                <i data-lucide="<%= u.getRole().toString().equals("
-                                                                    CANDIDATE") ? "user" : "building" %>" class="w-5
-                                                                    h-5"></i>
-                                                            </div>
-                                                            <span class="font-medium text-slate-900">ID #<%= u.getId()
-                                                                    %></span>
-                                                        </div>
-                                                    </td>
-                                                    <td class="p-4 text-slate-600">
-                                                        <%= u.getEmail() %>
-                                                    </td>
-                                                    <td class="p-4">
-                                                        <span class="<%= u.getRole().toString().equals(" CANDIDATE")
-                                                            ? "bg-blue-100 text-blue-700"
-                                                            : "bg-indigo-100 text-indigo-700" %> px-3 py-1 rounded-full
-                                                            text-xs font-medium">
-                                                            <%= u.getRole().toString().equals("CANDIDATE") ? "Candidat"
-                                                                : "Entreprise" %>
-                                                        </span>
-                                                    </td>
-                                                    <td class="p-4 text-right">
-                                                        <div class="flex justify-end gap-2 text-right">
-                                                            <button
-                                                                onclick="handleAction(event, 'accept', <%= u.getId() %>)"
-                                                                class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center gap-1 text-sm font-medium">
-                                                                <i data-lucide="check" class="w-4 h-4"></i> Accepter
-                                                            </button>
-                                                            <button
-                                                                onclick="handleAction(event, 'refuse', <%= u.getId() %>)"
-                                                                class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center gap-1 text-sm font-medium">
-                                                                <i data-lucide="x" class="w-4 h-4"></i> Refuser
-                                                            </button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                                <% } %>
-                                        </tbody>
+    <% for (User u : pendingUsers) { %>
+    <tr class="hover:bg-slate-50">
+        <td class="p-4">
+            <div class="flex items-center gap-3">
+                <div class="<%= u.getRole().toString().equals("CANDIDATE") ? "bg-blue-100 text-blue-600" : "bg-indigo-100 text-indigo-600" %> p-2 rounded-lg">
+                    <i data-lucide="<%= u.getRole().toString().equals("CANDIDATE") ? "user" : "building" %>" class="w-5 h-5"></i>
+                </div>
+                <span class="font-medium text-slate-900">ID #<%= u.getId() %></span>
+            </div>
+        </td>
+        <td class="p-4 text-slate-600">
+            <%= u.getEmail() %>
+        </td>
+        <td class="p-4">
+            <span class="<%= u.getRole().toString().equals("CANDIDATE") ? "bg-blue-100 text-blue-700" : "bg-indigo-100 text-indigo-700" %> px-3 py-1 rounded-full text-xs font-medium">
+                <%= u.getRole().toString().equals("CANDIDATE") ? "Candidat" : "Entreprise" %>
+            </span>
+        </td>
+        <td class="p-4 text-right">
+            <div class="flex justify-end gap-2 text-right">
+                <button onclick="handleAction(event, 'accept', <%= u.getId() %>)" class="bg-emerald-600 text-white px-4 py-2 rounded-lg hover:bg-emerald-700 flex items-center gap-1 text-sm font-medium">
+                    <i data-lucide="check" class="w-4 h-4"></i> Accepter
+                </button>
+                <button onclick="handleAction(event, 'refuse', <%= u.getId() %>)" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg hover:bg-red-200 flex items-center gap-1 text-sm font-medium">
+                    <i data-lucide="x" class="w-4 h-4"></i> Refuser
+                </button>
+            </div>
+        </td>
+    </tr>
+    <% } %>
+</tbody>
                                     </table>
                                 </div>
                                 <% } %>
