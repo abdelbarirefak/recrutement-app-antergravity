@@ -9,7 +9,6 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.mindrot.jbcrypt.BCrypt;
 import java.io.IOException;
 
 /**
@@ -46,11 +45,8 @@ public class RegisterServlet extends HttpServlet {
 
             Role role = Role.valueOf(roleParam);
 
-            // Hachage du mot de passe avec BCrypt
-            String hashedPw = BCrypt.hashpw(password, BCrypt.gensalt());
-
             // 1. Créer l'utilisateur avec statut EN_ATTENTE
-            User newUser = new User(email, hashedPw, role);
+            User newUser = new User(email, password, role);
             newUser.setStatus(UserStatus.EN_ATTENTE); // Explicite
             userDAO.save(newUser);
 

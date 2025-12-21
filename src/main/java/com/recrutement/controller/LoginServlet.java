@@ -1,8 +1,6 @@
 package com.recrutement.controller;
 
-import com.recrutement.entity.Role;
 import com.recrutement.entity.User;
-import com.recrutement.entity.UserStatus;
 import com.recrutement.service.UserService;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -40,13 +38,6 @@ public class LoginServlet extends HttpServlet {
             User user = userService.login(email, password);
 
             if (user != null) {
-                // Vérifier le statut pour les non-admins
-                if (user.getRole() != Role.ADMIN && user.getStatus() == UserStatus.EN_ATTENTE) {
-                    request.setAttribute("errorMessage",
-                            "Compte en attente de validation par l'administrateur.");
-                    request.getRequestDispatcher("login.jsp").forward(request, response);
-                    return;
-                }
 
                 // Connexion réussie
                 HttpSession session = request.getSession();

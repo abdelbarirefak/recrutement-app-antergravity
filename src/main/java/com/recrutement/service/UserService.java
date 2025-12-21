@@ -7,7 +7,6 @@ import com.recrutement.entity.Candidate;
 import com.recrutement.entity.Enterprise;
 import com.recrutement.entity.Role;
 import com.recrutement.entity.User;
-import org.mindrot.jbcrypt.BCrypt;
 
 public class UserService {
 
@@ -52,7 +51,9 @@ public class UserService {
 
     public User login(String email, String password) {
         User user = userDAO.findByEmail(email);
-        if (user != null && BCrypt.checkpw(password, user.getPassword())) {
+
+        // MODIFICATION: Compare passwords directly as plain text
+        if (user != null && user.getPassword().equals(password)) {
             return user;
         }
         return null;
